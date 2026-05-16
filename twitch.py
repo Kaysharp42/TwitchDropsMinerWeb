@@ -1565,8 +1565,8 @@ class Twitch:
         return self._merge_data(campaign_ids, fetched_data)
 
     async def fetch_inventory(self) -> None:
-        status_update = self.gui.status.update
-        status_update(_("gui", "status", "fetching_inventory"))
+        if self.gui_enabled:
+            self.gui.status.update(_("gui", "status", "fetching_inventory"))
         logger.info("Fetching inventory and available campaigns")
 
         # Check if we're logged in by verifying access_token exists

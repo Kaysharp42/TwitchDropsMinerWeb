@@ -363,7 +363,7 @@ GQL_QUERIES: dict[str, GQLPersistedQuery] = {
     # returns all available campaigns
     "Campaigns": GQLPersistedQuery(
         "ViewerDropsDashboard",
-        "d9cae7761dafab85908c85e6683cb4201b449e66ac3bb5e894f15ff12aeafaa7",
+        "c16bb890cc8ce7647a96ee69cd313d423a378a3dedadf630a1017cde18975feb",
         variables={
             "fetchRewardCampaigns": False,
         }

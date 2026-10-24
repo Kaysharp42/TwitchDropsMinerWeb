@@ -14,18 +14,19 @@ import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv
+from constants import WORKING_DIR
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(WORKING_DIR / '.env')
 
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+DATA_DIR = str(WORKING_DIR)
 CREDENTIALS_PATH = os.path.join(DATA_DIR, 'credentials.json')
 
 # JWT settings - get secret from environment variable or generate and save to .env file
 JWT_SECRET = os.environ.get('JWT_SECRET')
 if not JWT_SECRET:
     JWT_SECRET = secrets.token_hex(32)
-    env_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.env'))
+    env_path = os.path.join(DATA_DIR, '.env')
     
     # Read current .env file
     if os.path.exists(env_path):

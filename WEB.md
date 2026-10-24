@@ -13,6 +13,20 @@ The web interface allows you to:
 - Manage login and authentication
 - Configure application settings
 
+## Windows executable
+
+Build with `build.bat` after installing `requirements.txt` in the virtual environment, then run:
+
+```powershell
+& ".\dist\Twitch Drops Miner (by DevilXD).exe" --web --web-host 127.0.0.1 --web-port 8080
+```
+
+`--web` enables web-only mode. The host defaults to `127.0.0.1` and the port to `8080`.
+Open `http://localhost:8080` in your browser. Use `--web-host 0.0.0.0` to allow
+connections from other machines; only expose it on a trusted network.
+Without `--web`, the executable opens the desktop interface as before.
+Web credentials and `.env` are read from beside the executable, not its temporary extraction folder.
+
 ## Docker Deployment
 
 This fork adds comprehensive Docker support for easy deployment in containers. The app automatically runs in web-only mode when deployed in Docker:

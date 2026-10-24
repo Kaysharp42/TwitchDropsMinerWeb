@@ -1028,24 +1028,25 @@ class Twitch:
                 # if the channel isn't online anymore, we stop watching it
                 self.stop_watching()
                 continue
+            # logger.log(CALL, f"Sending watch payload to: {channel.name}")
             current_time = time()
-            succeeded: bool = await channel.send_watch()
             last_sent: float = current_time
+            succeeded: bool = await channel.send_watch()
             if not succeeded:
                 logger.log(CALL, f"Watch requested failed for channel: {channel.name}")
-            # wait ~20 seconds for a progress update
-            await asyncio.sleep(20)
-            
+            # wait ~15 seconds for a progress update
+            await asyncio.sleep(15 - min(time() - last_sent, 15))
+
             # Check if we should query for drop progress updates
             # In GUI mode: check if the progress tracker indicates we need an update AND timeout has passed
             # In headless mode: check if timeout has passed (since we don't have a progress tracker)
             should_check_progress = (
                 current_time - last_update_time > update_timeout and (
-                    not self.gui_enabled or 
-                    (self.gui_enabled and self.gui.progress.minute_almost_done())
+                    not self.gui_enabled
+                    or self.gui.progress.minute_almost_done()
                 )
             )
-            
+
             if should_check_progress:
                 # If the previous update was more than ~60s ago, and the progress tracker
                 # isn't counting down anymore, that means Twitch has temporarily

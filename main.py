@@ -21,11 +21,6 @@ if __name__ == "__main__":
     from typing import IO, NoReturn, Optional, TYPE_CHECKING
 
     try:
-        from web.app import run_web_server, initialize  # Add 'initialize' to the import
-        HAS_WEB_INTERFACE = True
-    except ImportError:
-        HAS_WEB_INTERFACE = False
-    try:
         import truststore
         truststore.inject_into_ssl()
     except ImportError:
@@ -130,27 +125,26 @@ if __name__ == "__main__":
     parser.add_argument("--dump", action="store_true")
     
     # Web interface options
-    if HAS_WEB_INTERFACE:
-        parser.add_argument(
-            "--web",
-            dest="enable_web",
-            action="store_true",
-            help="Enable the web interface"
-        )
-        parser.add_argument(
-            "--web-host",
-            dest="web_host",
-            type=str,
-            default="127.0.0.1",
-            help="Web interface host address (default: 127.0.0.1)"
-        )
-        parser.add_argument(
-            "--web-port",
-            dest="web_port",
-            type=int,
-            default=8080,
-            help="Web interface port (default: 8080)"
-        )
+    parser.add_argument(
+        "--web",
+        dest="enable_web",
+        action="store_true",
+        help="Enable the web interface"
+    )
+    parser.add_argument(
+        "--web-host",
+        dest="web_host",
+        type=str,
+        default="127.0.0.1",
+        help="Web interface host address (default: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--web-port",
+        dest="web_port",
+        type=int,
+        default=8080,
+        help="Web interface port (default: 8080)"
+    )
     
     # undocumented debug args
     parser.add_argument(
@@ -161,6 +155,13 @@ if __name__ == "__main__":
     )
     
     args = parser.parse_args(namespace=ParsedArgs())
+    if not 1 <= args.web_port <= 65535:
+        parser.error("--web-port must be between 1 and 65535")
+    if args.enable_web:
+        try:
+            from web.app import run_web_server, initialize
+        except ImportError as exc:
+            parser.error(f"Cannot start the web interface: {exc}. Reinstall the web dependencies and rebuild the executable.")
     
     # load settings
     try:
@@ -206,7 +207,7 @@ if __name__ == "__main__":
         warnings.filterwarnings("ignore", "Unclosed.*<ssl.SSLSocket.*>", ResourceWarning)
         
         # Update settings with web interface status before creating Twitch instance
-        if HAS_WEB_INTERFACE and args.enable_web:
+        if args.enable_web:
             settings.gui_enabled = False
         else:
             settings.gui_enabled = True
@@ -214,7 +215,7 @@ if __name__ == "__main__":
         client = Twitch(settings)
         
         # Start web server if enabled and available
-        if HAS_WEB_INTERFACE and args.enable_web:
+        if args.enable_web:
             log.info(f"Starting web interface on {args.web_host}:{args.web_port}")
             client.print(f"Starting web interface on http://{args.web_host}:{args.web_port}")
             

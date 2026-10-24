@@ -21,11 +21,8 @@ from constants import State
 from utils import Game, create_nonce, CHARS_HEX_LOWER
 from version import __version__
 
-# Make sure the current directory is in the path so we can import auth.py
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 # Import auth module (from the web directory)
-from auth import is_setup_needed, create_user, validate_credentials, generate_token, validate_token, revoke_token, auth_required, login_required
+from web.auth import is_setup_needed, create_user, validate_credentials, generate_token, validate_token, revoke_token, auth_required, login_required
 
 
 # Global reference to the TDM instance - will be set by the main app
